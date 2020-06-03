@@ -1,0 +1,61 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="col-md-4 text-center">
+        <br>
+        <h3>提交面部图片进行分析</h3>
+        <p>1. 正常开启摄像头：拍摄 -> 识别 -> 分析</p>
+        <p>2. 开启摄像头失败：选择图片 -> 识别 -> 分析</p>
+        <form action="{% url 'fermodel:recognize' %}" method="post">
+            {% csrf_token %}
+            <label>上传图片(仅 png)</label>
+            <input type="file" name="image" class="form-control"
+                   accept="image/png" id="image_up" >
+        </form>
+        <br>
+        <div class="row text-center">
+            <button class="btn btn-default" id="snap">拍摄</button>
+            <button class="btn btn-default" id='analysis'>识别</button>
+        </div>
+        <br>
+        <label>摄像头捕捉画面</label>
+        <video id="video" width="300" height="225" autoplay></video>
+        <canvas id="canvas" width="300" height="225"></canvas>
+        <button class="btn btn-default" id='saveimg'>保存拍摄图片</button>
+
+
+    </div>
+    <div class="col-md-8">
+    <h2>识别结果</h2>
+        <p>根据模型分析，你的表情是 <strong id="result">__</strong> ，具体概率分布如下：</p>
+        <br>
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>愤怒</th>
+                <th>快乐</th>
+                <th>悲伤</th>
+                <th>惊讶</th>
+                <th>平静</th>
+            </tr>
+            <tr>
+                <td>概率 (%)</td>
+                <td id="angry">_</td>
+                <td id="happy">_</td>
+                <td id="sad">_</td>
+                <td id="surprise">_</td>
+                <td id="natural">_</td>
+            </tr>
+        </table>
+        <hr>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/layer.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/facedetect.js' %}"></script>
+
+{% endblock %}

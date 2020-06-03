@@ -1,0 +1,28 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    {% include 'musicplayer/music_nav.html' %}
+    {% for list in music_list %}
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" style="width: 60px" src="{{ list.cover.url }}" alt="{{ list.name }}">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">{{ list.name }}</h4>
+                <p>情感类型：{{ list.get_mtype_display }}</p>
+                <p>音乐：
+                    {% for music in list.music.all %}
+                        <a href="{{ music.file.url }}">{{ music.name }}</a>；
+                        {#                    <audio src="{{ music.file.url }}" controls="controls">您的浏览器不支持</audio>#}
+                    {% endfor %}
+                </p>
+            </div>
+
+
+            <hr>
+        </div>
+    {% endfor %}
+{% endblock %}
+

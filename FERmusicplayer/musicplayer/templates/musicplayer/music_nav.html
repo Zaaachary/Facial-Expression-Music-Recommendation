@@ -1,0 +1,7 @@
+<br>
+<ul class="nav nav-tabs">
+    <li role="presentation" {% if request.path|slice:"7" == '/player' %}class="active"{% endif %}><a href="{% url 'musicplayer:music_player' %}">音乐推荐</a></li>
+    <li role="presentation" {% if request.path == '/musics-list/' %}class="active"{% endif %} ><a href="{% url 'musicplayer:music_list' %}">歌单列表</a></li>
+    <li role="presentation"><a href="/admin/">管理音乐</a></li>
+</ul>
+<br>

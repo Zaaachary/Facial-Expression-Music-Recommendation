@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+
+    <title>{% block title %}基于面部表情的音乐推荐系统{% endblock %}</title>
+    {% block head %}{% endblock %}
+
+    <style>
+        body {
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">表情识别与音乐推荐</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li {% if request.path != '/fermodel/' and request.path != '/intro/' %}class="active"{% endif %}>
+                    <a href="{% url 'musicplayer:music_player' %}">播放器</a></li>
+                <li {% if request.path == '/fermodel/' %}class="active"{% endif %}>
+                    <a href="{% url 'fermodel:camera' %}">模型评估</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">项目介绍</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer class="text-center">
+    <hr>
+    <p>基于面部表情的音乐推荐技术研究与实现</p>
+    <p><a href="http://www.hfut.edu.cn">合肥工业大学</a> | 电子信息科学与技术 | <a href="http://zrawberry.com">李志峰</a> | 2016217812</p>
+</footer>
+
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+{% block javascripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+.idea
+.vscode
+*.pyc
+*.mp3
+*.js
+*.css
+
+checkpoint
+media
+fer2013
+
+db.sqlite3

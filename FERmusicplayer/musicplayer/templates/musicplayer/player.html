@@ -1,0 +1,220 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="col-md-8">
+        {% include 'musicplayer/music_nav.html' %}
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{% static 'img/pic.jpg' %}" style="width: 64px">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading" id="songtitle">歌曲名</h4>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                         aria-valuemax="100"
+                         style="width: 0%;">
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-default" id='acquire'>获取歌单</button>
+                    <button class="btn btn-default" id="play">播放\暂停</button>
+                    <button class="btn btn-default" id='nextbtn'>下一首</button>
+                </div>
+            </div>
+        </div>
+        <audio id="mic_audio"></audio>
+        <br>
+        <p>通过神经网络分析，你的表情是 <strong id="result">__</strong> 。</p>
+        <p>根据音乐的<a href="#">同质原理</a> ，推荐如下的歌单，播放顺序从左至右。</p>
+        <div class="row">
+            <div class="list-group col-md-4" id="list1">
+            </div>
+            <div class="list-group col-md-4" id="list2">
+            </div>
+            <div class="list-group col-md-4" id="list3">
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-md-4">
+        <br>
+        <h3>提交面部图片进行分析</h3>
+        <p>1. 正常开启摄像头：拍摄 -> 识别 -> 分析</p>
+        <p>2. 开启摄像头失败：选择图片 -> 识别 -> 分析</p>
+        <form action="{% url 'fermodel:recognize' %}" method="post">
+            {% csrf_token %}
+            <label>上传图片(仅 png)</label>
+            <input type="file" name="image" class="form-control"
+                   accept="image/png" id="image_up">
+        </form>
+        <br>
+        <div class="row text-center">
+            <button class="btn btn-default" id="snap">拍摄</button>
+            <button class="btn btn-default" id='analysis'>识别</button>
+        </div>
+        <br>
+        <label>摄像头捕捉画面</label>
+        <video id="video" width="300" height="225" autoplay></video>
+        <canvas id="canvas" width="300" height="225"></canvas>
+        <button class="btn btn-default" id='saveimg'>保存拍摄图片</button>
+
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/layer.js' %}"></script>
+
+    <script>
+        var emotion_id = -1;
+        var getlllist = false;
+        var song_list = [];
+        var currentplay = 0;
+    </script>
+    <script type="text/javascript" src="{% static 'js/facedetect.js' %}"></script>
+    <script>
+        var musicAudio = document.querySelector('#mic_audio');
+        var progress = document.querySelector('.progress-bar');
+        var musicTitle = document.querySelector('#songtitle');
+        var list1 = document.getElementById("list1");
+        var list2 = document.querySelector("#list2");
+        var list3 = document.querySelector("#list3");
+
+        acquire.onclick = function () {
+            list1.innerHTML = '';
+            list2.innerHTML = '';
+            list3.innerHTML = '';
+            song_list = [];
+            currentplay = 0;
+            if (emotion_id < 0) {
+                layer.msg("请先进行表情识别");
+                return;
+            }
+            layer.msg("根据 " + emotion[emotion_id] + " 表情获取歌单。");
+            $.ajax({
+                    url: "{% url 'musicplayer:music_player' %}",
+                    type: 'POST',
+                    data: {"target": "2", "emotion": emotion_id},
+                    beforeSend: function (xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    },
+                    success: function (data) {
+                        // name1, name2, list1, list2
+                        getlllist = true;
+
+                        // 歌单1
+                        if (data['name1']) {
+                            temp = document.createElement("li");
+                            temp.className = 'list-group-item';
+                            temp.innerHTML = "<strong>" + data["name1"] + "</strong>";
+                            list1.appendChild(temp);
+                            song_list = song_list.concat(data['list1']);
+                            for (i = 0; i < data['list1'].length; i++) {
+                                temp = document.createElement("li");
+                                temp.className = 'list-group-item';
+                                temp.innerHTML = data['list1'][i][0];
+                                list1.appendChild(temp);
+                            }
+                        }
+
+                        // 歌单2
+                        if (data['name2']) {
+                            temp = document.createElement("li");
+                            temp.className = 'list-group-item';
+                            temp.innerHTML = "<strong>" + data["name2"] + "</strong>";
+                            list2.appendChild(temp);
+                            song_list = song_list.concat(data['list2']);
+                            for (i = 0; i < data['list2'].length; i++) {
+                                temp = document.createElement("li");
+                                temp.className = 'list-group-item';
+                                temp.innerHTML = data['list2'][i][0];
+                                list2.appendChild(temp);
+                            }
+                        }
+
+                        // 歌单3
+                        if (data['name3']) {
+                            temp = document.createElement("li");
+                            temp.className = 'list-group-item';
+                            temp.innerHTML = "<strong>" + data["name3"] + "</strong>";
+                            list3.appendChild(temp);
+                            song_list = song_list.concat(data['list3']);
+                            for (i = 0; i < data['list2'].length; i++) {
+                                temp = document.createElement("li");
+                                temp.className = 'list-group-item';
+                                temp.innerHTML = data['list3'][i][0];
+                                list3.appendChild(temp);
+                            }
+                        }
+
+                    }
+                }
+            );
+        }
+
+        play.onclick = function () {
+            if (!musicAudio.src) {
+                getMusic();
+            }
+            musicAudio.onplaying = null;  //  清除audio标签绑定的事件
+            if (musicAudio.paused) {
+                play.innerHTML = '暂停';
+                musicAudio.play();
+            } else {
+                play.innerHTML = '播放';
+                musicAudio.pause();
+            }
+        };
+
+        nextbtn.onclick = function () {
+            if (!getlllist) {
+                layer.msg("请先 识别表情 并 获取歌单！")
+            } else {
+                getMusic();
+            }
+        }
+
+        function getMusic() {
+            if (currentplay >= song_list.length) {
+
+                layer.msg("已经播放完所有的歌曲，请重新获取歌单。");
+            } else {
+                m_id = song_list[currentplay][1];
+                currentplay++;
+                $.ajax({
+                        url: "{% url 'musicplayer:music_player' %}",
+                        type: 'POST',
+                        data: {"target": "1", "music_id": m_id},
+                        beforeSend: function (xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        },
+                        success: function (data) {
+                            // name, url
+                            musicTitle.innerHTML = data['name'];
+                            musicAudio.src = data['url'];
+                            musicAudio.play();
+                            play.innerHTML = '暂停';
+                        }
+                    }
+                )
+            }
+
+        }
+
+        var isLoading = false;
+        var progressTimer = setInterval(activeProgressBar, 300);
+
+        function activeProgressBar() {
+            var percentNum = Math.floor((musicAudio.currentTime / musicAudio.duration) * 10000) / 100 + '%';
+            progress.style.width = percentNum;
+        }
+    </script>
+{% endblock %}
