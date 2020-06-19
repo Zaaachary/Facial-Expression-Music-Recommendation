@@ -6,14 +6,16 @@
 
 ### 1.1 面部表情识别 FERnetwork
 数据集：Fer2013 下载链接见使用方法 神经网络模型：LeNet，AlexNet
-**模块功能**
+
+**模块介绍**
 - `Utils.py`：数据集预处理；读取csv生成npy；合并privatetest和training；删除2种不好的表情
 - `Network.py`：神经网络模块；两种模型定义和训练；预测函数接口；
 - `FormatPredict.py`：格式化用户输入；滑动窗口识别人脸位置；裁剪出人脸并转换为符合数据集的灰度图；摄像头表情识别demo
 
 ### 1.2 DjangoWeb FERmusicplayer
 Django项目，主要包含含`faceemotion`和`musicplayer`两个应用以及静态文件和数据库。
-**项目模块介绍**
+
+**模块介绍**
 - Django框架和其他
     - `media`：存放音乐和图片的媒体目录
     - `static`：存放静态文件的目录，使用前需要解压
@@ -31,7 +33,7 @@ Django项目，主要包含含`faceemotion`和`musicplayer`两个应用以及静
     - 根据用户的表情，推荐相应歌单
     
 ## 2 使用方法
-1. 配置环境 Python3.6+, 安装 requirement.txt 中的依赖项
+1. 项目环境 Python3.6+, 使用 pip 安装 requirement.txt 中的依赖项
 2. 下载Fer2013数据集 下载链接[Kaggle](https://www.kaggle.com/deadskull7/fer2013) [Zrawberry.com](http://cloud.zrawberry.com/index.php/s/ngwt5QBiR4FMPEj)
 3. 训练神经网络 FERnetwork
 	- 运行 Utils.py 对数据集预处理
