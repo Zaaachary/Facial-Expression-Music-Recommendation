@@ -1,7 +1,7 @@
 # Music recommendation system based on facial expression
 基于面部表情的音乐推荐系统, 快刀切草莓君的毕业设计, Graduation Project
 
-项目目前部署在 (fer.zrawberry.com)[http://fer.zrawberry.com]， 欢迎大家前来体验。
+项目目前部署在 [fer.zrawberry.com](http://fer.zrawberry.com)， 欢迎大家前来体验。
 
 ## 1 项目概述
 项目实现的是一个根据用户面部表情推荐音乐的系统，核心算法是卷积神经网络，使用django框架进行包装。项目主要分为面部表情识别和web平台开发两个部分。分别在`FERNetwork`和`FerMusicplayer`中实现，后者调用了前者的训练出的模型。
